@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumina | Admin Control Dashboard</title>
+  <meta name="description" content="Manage store inventory, add products, adjust discounts, toggle availability, and track all incoming customer orders. Direct Supabase integration.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand-logo" id="brandLogo">
+        <div class="brand-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <span>LUMINA</span>
+      </a>
+
+      <!-- Page Navigation Links -->
+      <nav>
+        <ul class="nav-links">
+          <li>
+            <a href="index.html" class="nav-link" id="navProducts">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+              </svg>
+              <span>Products</span>
+            </a>
+          </li>
+          <li>
+            <a href="orders.html" class="nav-link" id="navOrders">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+              </svg>
+              <span>My Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="admin.html" class="nav-link active" id="navAdmin">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span>Admin Panel</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn btn-emerald btn-sm" onclick="openAddProductModal()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          <span>Add Product</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Admin Main Workspace -->
+  <main class="container" style="padding-top: 2.5rem;">
+    <!-- Title & Action Bar -->
+    <div class="admin-header-row">
+      <div>
+        <h1 style="font-size: 2.2rem; margin-bottom: 0.25rem;">Store Administration</h1>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+          Direct control panel for Lumina products catalog and real-time orders queue.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <button class="btn btn-secondary btn-sm" onclick="seedSampleProducts()" title="Seeds 5 realistic gadgets into the database">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+          </svg>
+          <span>Seed Demo Items</span>
+        </button>
+
+        <button class="btn btn-primary btn-sm" onclick="initAdmin()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Metric Cards -->
+    <section class="stats-grid" aria-label="Store Key Metrics">
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Total Products</span>
+          <span class="stat-value" id="kpiTotalProducts">...</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon emerald">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">In Stock & Active</span>
+          <span class="stat-value" id="kpiAvailableProducts">...</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon amber">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Out of Stock</span>
+          <span class="stat-value" id="kpiOutOfStock">...</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon indigo">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Orders Received</span>
+          <span class="stat-value" id="kpiTotalOrders">...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Admin Navigation Tabs -->
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-target="products">
+        Products Inventory
+      </button>
+      <button class="admin-tab" data-target="orders">
+        Customer Orders
+      </button>
+    </div>
+
+    <!-- Section 1: Products Inventory Table -->
+    <section id="adminProductsSection">
+      <div class="table-responsive">
+        <table class="data-table" aria-label="Products Table">
+          <thead>
+            <tr>
+              <th style="width: 70px;">ID</th>
+              <th>Product Details</th>
+              <th>Brand / Company</th>
+              <th>Discount ($)</th>
+              <th style="width: 100px;">Availability</th>
+              <th>Status</th>
+              <th style="text-align: right; width: 120px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminProductsTableBody">
+            <!-- Injected via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 2: Customer Orders Table -->
+    <section id="adminOrdersSection" style="display: none;">
+      <div class="table-responsive">
+        <table class="data-table" aria-label="Orders Table">
+          <thead>
+            <tr>
+              <th style="width: 70px;">Order</th>
+              <th>Timestamp</th>
+              <th>Customer Info</th>
+              <th>Shipping Address</th>
+              <th>Product Ordered</th>
+              <th>Discount Granted</th>
+              <th style="text-align: right; width: 90px;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminOrdersTableBody">
+            <!-- Injected via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Add Product Modal -->
+  <div class="modal-overlay" id="addProductModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 class="modal-title">Add New Product</h2>
+        <button class="btn-close" onclick="closeAddProductModal()" aria-label="Close dialog">✕</button>
+      </div>
+
+      <form id="addProductForm" class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="addProdCompany">Company / Brand Name *</label>
+          <input type="text" id="addProdCompany" class="form-control" placeholder="e.g. Apple, Sony, Dyson" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="addProdName">Product Name *</label>
+          <input type="text" id="addProdName" class="form-control" placeholder="e.g. AirPods Max 2 Space Gray" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="addProdDesc">Description *</label>
+          <textarea id="addProdDesc" class="form-control" placeholder="Key technical specifications, materials, warranty info..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="addProdImage">Image URL *</label>
+          <input type="url" id="addProdImage" class="form-control" placeholder="https://images.unsplash.com/photo-..." required />
+          <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.6rem;">
+            <img id="addProdImagePreview" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800" alt="Preview" style="width: 50px; height: 50px; border-radius: var(--radius-sm); object-fit: cover; border: 1px solid var(--border-subtle);">
+            <small style="color: var(--text-muted); font-size: 0.8rem;">Live preview will display automatically above</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="addProdDiscount">Discount Amount ($) *</label>
+          <input type="number" id="addProdDiscount" class="form-control" placeholder="e.g. 50" min="0" value="0" required />
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.5rem;">
+          <div>
+            <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">Available for Purchase</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Enable to allow customers to order immediately</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="addProdAvailable" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="modal-footer" style="padding-left: 0; padding-right: 0; padding-bottom: 0;">
+          <button type="button" class="btn btn-secondary" onclick="closeAddProductModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submitAddProdBtn">Add Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div class="modal-overlay" id="editProductModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 class="modal-title">Edit Product <span id="editProdId" style="color: #a5b4fc; font-weight: normal;"></span></h2>
+        <button class="btn-close" onclick="closeEditProductModal()" aria-label="Close dialog">✕</button>
+      </div>
+
+      <form id="editProductForm" class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="editProdCompany">Company / Brand Name *</label>
+          <input type="text" id="editProdCompany" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="editProdName">Product Name *</label>
+          <input type="text" id="editProdName" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="editProdDesc">Description *</label>
+          <textarea id="editProdDesc" class="form-control" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="editProdImage">Image URL *</label>
+          <input type="url" id="editProdImage" class="form-control" required />
+          <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.6rem;">
+            <img id="editProdImagePreview" src="" alt="Preview" style="width: 50px; height: 50px; border-radius: var(--radius-sm); object-fit: cover; border: 1px solid var(--border-subtle);">
+            <small style="color: var(--text-muted); font-size: 0.8rem;">Live preview</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="editProdDiscount">Discount Amount ($) *</label>
+          <input type="number" id="editProdDiscount" class="form-control" min="0" required />
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; padding-top: 0.5rem;">
+          <div>
+            <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">Available for Purchase</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Toggle stock availability</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="editProdAvailable" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="modal-footer" style="padding-left: 0; padding-right: 0; padding-bottom: 0;">
+          <button type="button" class="btn btn-secondary" onclick="closeEditProductModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submitEditProdBtn">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- App Configuration & Database Utilities -->
+  <script src="js/supabase-config.js"></script>
+  <!-- Admin Page Logic -->
+  <script src="js/admin.js"></script>
+</body>
+</html>
