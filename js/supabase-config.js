@@ -6,15 +6,17 @@
 const SUPABASE_URL = "https://wdgxidyubxpnhrerdtdw.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_xTemYGhpMKTLCl6ys6g18Q_sMFQd13m";
 
-// Initialize Supabase Client
-const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+// Initialize Supabase Client instance (named supabaseClient to avoid collision with global library 'supabase')
+const supabaseClient = (window.supabase && typeof window.supabase.createClient === "function")
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
 
 // Product Database Operations
 const ProductService = {
   // Fetch all products
   async getAll() {
-    if (!supabase) throw new Error("Supabase client not initialized");
-    const { data, error } = await supabase
+    if (!supabaseClient) throw new Error("Supabase client not initialized");
+    const { data, error } = await supabaseClient
       .from("Product")
       .select("*")
       .order("id", { ascending: false });
@@ -25,8 +27,8 @@ const ProductService = {
 
   // Fetch only available products
   async getAvailable() {
-    if (!supabase) throw new Error("Supabase client not initialized");
-    const { data, error } = await supabase
+    if (!supabaseClient) throw new Error("Supabase client not initialized");
+    const { data, error } = await supabaseClient
       .from("Product")
       .select("*")
       .eq("is_available", true)
@@ -38,8 +40,8 @@ const ProductService = {
 
   // Get single product by ID
   async getById(id) {
-    if (!supabase) throw new Error("Supabase client not initialized");
-    const { data, error } = await supabase
+    if (!supabaseClient) throw new Error("Supabase client not initialized");
+    const { data, error } = await supabaseClient
       .from("Product")
       .select("*")
       .eq("id", id)
@@ -51,8 +53,8 @@ const ProductService = {
 
   // Add new product
   async create(product) {
-    if (!supabase) throw new Error("Supabase client not initialized");
-    const { data, error } = await supabase
+    if (!supabaseClient) throw new Error("Supabase client not initialized");
+    const { data, error } = await supabaseClient
       .from("Product")
       .insert([{
         Company_name: product.Company_name,
@@ -70,7 +72,7 @@ const ProductService = {
 
   // Update product
   async update(id, updates) {
-    if (!supabase) throw new Error("Supabase client not initialized");
+    if (!supabaseClient) throw new Error("Supabase client not initialized");
     const payload = {};
     if (updates.Company_name !== undefined) payload.Company_name = updates.Company_name;
     if (updates.Product_Name !== undefined) payload.Product_Name = updates.Product_Name;
@@ -79,7 +81,7 @@ const ProductService = {
     if (updates.Discount_amount !== undefined) payload.Discount_amount = parseInt(updates.Discount_amount, 10) || 0;
     if (updates.is_available !== undefined) payload.is_available = updates.is_available;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("Product")
       .update(payload)
       .eq("id", id)
@@ -96,8 +98,8 @@ const ProductService = {
 
   // Delete product
   async delete(id) {
-    if (!supabase) throw new Error("Supabase client not initialized");
-    const { data, error } = await supabase
+    if (!supabaseClient) throw new Error("Supabase client not initialized");
+    const { data, error } = await supabaseClient
       .from("Product")
       .delete()
       .eq("id", id);
@@ -111,8 +113,8 @@ const ProductService = {
 const OrderService = {
   // Fetch all orders with linked Product details
   async getAll() {
-    if (!supabase) throw new Error("Supabase client not initialized");
-    const { data, error } = await supabase
+    if (!supabaseClient) throw new Error("Supabase client not initialized");
+    const { data, error } = await supabaseClient
       .from("Order")
       .select("*, Product(*)")
       .order("id", { ascending: false });
@@ -123,12 +125,12 @@ const OrderService = {
 
   // Create an order
   async create(orderData) {
-    if (!supabase) throw new Error("Supabase client not initialized");
+    if (!supabaseClient) throw new Error("Supabase client not initialized");
     // Ensure numeric phone number
     const cleanPhone = String(orderData.Customer_ph_no).replace(/[^0-9]/g, "");
     const numericPhone = cleanPhone ? parseInt(cleanPhone, 10) : 0;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("Order")
       .insert([{
         Order_id: parseInt(orderData.Order_id, 10),
@@ -144,11 +146,11 @@ const OrderService = {
 
   // Search orders by Customer phone number
   async searchByPhone(phoneQuery) {
-    if (!supabase) throw new Error("Supabase client not initialized");
+    if (!supabaseClient) throw new Error("Supabase client not initialized");
     const cleanPhone = String(phoneQuery).replace(/[^0-9]/g, "");
     if (!cleanPhone) return [];
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("Order")
       .select("*, Product(*)")
       .eq("Customer_ph_no.", parseInt(cleanPhone, 10))
@@ -160,8 +162,8 @@ const OrderService = {
 
   // Delete order (for admin management)
   async delete(id) {
-    if (!supabase) throw new Error("Supabase client not initialized");
-    const { data, error } = await supabase
+    if (!supabaseClient) throw new Error("Supabase client not initialized");
+    const { data, error } = await supabaseClient
       .from("Order")
       .delete()
       .eq("id", id);
@@ -198,3 +200,9 @@ function showToast(message, type = "success") {
     setTimeout(() => toast.remove(), 400);
   }, 3500);
 }
+
+// Expose globally
+window.ProductService = ProductService;
+window.OrderService = OrderService;
+window.showToast = showToast;
+window.supabaseClient = supabaseClient;

@@ -281,3 +281,8 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
+// Expose handlers on window
+window.printReceipt = printReceipt;
+window.loadOrders = loadOrders;
+

@@ -485,3 +485,15 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
+// Expose handlers for HTML inline actions
+window.openAddProductModal = openAddProductModal;
+window.closeAddProductModal = closeAddProductModal;
+window.openEditModal = openEditModal;
+window.closeEditProductModal = closeEditProductModal;
+window.seedSampleProducts = seedSampleProducts;
+window.handleToggleProductAvailability = handleToggleProductAvailability;
+window.handleDeleteProduct = handleDeleteProduct;
+window.handleDeleteOrder = handleDeleteOrder;
+window.initAdmin = initAdmin;
+

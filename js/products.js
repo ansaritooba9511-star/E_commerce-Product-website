@@ -312,3 +312,10 @@ function escapeHtml(str) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
+// Expose handlers on window
+window.openOrderModal = openOrderModal;
+window.closeOrderModal = closeOrderModal;
+window.closeSuccessModal = closeSuccessModal;
+window.loadProducts = loadProducts;
+
